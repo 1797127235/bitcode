@@ -6,9 +6,14 @@
 #include<memory>
 
 
+
+
 #include <winsock2.h>
 #include <ws2tcpip.h>
+
+// 自动链接 ws2_32 库
 #pragma comment(lib, "ws2_32.lib")
+
 namespace socket_ns
 {
     using namespace log_ns;

@@ -1,3 +1,4 @@
+#pragma once
 #include"Socket.hpp"
 #include<thread>
 using namespace socket_ns;

@@ -1,5 +1,4 @@
 #pragma once
-
 #include <iostream>
 #include <ctime>
 #include <cstdarg>
@@ -7,8 +6,19 @@
 #include <cstring>
 #include <string>
 
+
 #ifdef _WIN32
+// 防止 windows.h 包含 winsock.h，避免与 winsock2.h 冲突
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+// 防止包含 winsock.h
+#define _WINSOCKAPI_
 #include <windows.h>
+#undef _WINSOCKAPI_  // 取消定义，允许后续正确包含
 #include <process.h>
 #include <memory>
 #else
@@ -16,7 +26,6 @@
 #include <unistd.h>
 #include <pthread.h>
 #endif
-
 namespace log_ns
 {
     enum
