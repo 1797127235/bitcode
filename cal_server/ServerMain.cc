@@ -1,4 +1,4 @@
-#include"ServeMain.hpp"
+#include"ServerMain.hpp"
 #include"IOServer.hpp"
 int main(int argc, char *argv[])
 {
@@ -8,9 +8,9 @@ int main(int argc, char *argv[])
         return 1;
     }
     int16_t port = atoi(argv[1]);
-
-    IOServer io_server;
-    std::unique_ptr<TcpServer> tsvr= std::make_unique<TcpServer>(port, std::bind(&IOServer::IOExcute, &io_server, std::placeholders::_1, std::placeholders::_2));
+    IOServer iosrv;
+    server_io_t io_func=std::bind(&IOServer::IOExcute, &iosrv, std::placeholders::_1, std::placeholders::_2);
+    std::unique_ptr<TcpServer> tsvr=std::make_unique<TcpServer>(port,io_func);
     tsvr->loop();
     return 0;
 }

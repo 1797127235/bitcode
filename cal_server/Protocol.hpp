@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include <json/json.h>
+//"len"\r\n"{json}"\r\n ---完整报文  len表示有效载荷的长度
 class Request
 {
 public:
@@ -79,6 +80,7 @@ public:
         builder["dropNullPlaceholders"] = true;     // 可选：省略 null 值
         builder["commentStyle"] = "None";           // 去除注释
         *out=Json::writeString(builder,root);
+        return true;
     }
     // 反序列化
     bool Deserialize(const std::string &in)
@@ -95,10 +97,12 @@ public:
             std::cerr << "Failed to parse JSON: " << errs_out << std::endl;
             return false;
         }
+        // 判断字段是否存在和类型是否正确
         if (!root.isMember("result") || !root["result"].isInt())
             return false;
         if (!root.isMember("code") || !root["code"].isInt())
             return false;
+
         _result = root["result"].asInt();
         _code = root["code"].asInt();
         return true;
@@ -107,4 +111,6 @@ public:
 private:
     int _result;
     int _code;
+    std::string desc;
+
 };

@@ -12,15 +12,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(EXECUTABLE_NAME cal_server_app)
 
 # 查找当前目录下的所有源文件 (.cc)
-# 使用 file(GLOB ...) 来自动包含目录中的所有源文件
 file(GLOB SOURCES "*.cc")
 
 # 添加可执行文件
 add_executable(${EXECUTABLE_NAME} ${SOURCES})
 
 # 将当前目录添加到头文件搜索路径
-# 这样 #include "SomeHeader.hpp" 就能正确找到文件
 target_include_directories(${EXECUTABLE_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+# 查找并链接 jsoncpp 库
+find_package(jsoncpp CONFIG REQUIRED)
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE JsonCpp::JsonCpp)
 
 # --- 链接平台相关的库 ---
 
@@ -33,7 +35,9 @@ if(WIN32)
     target_link_libraries(${EXECUTABLE_NAME} PRIVATE ws2_32)
 endif()
 
+# 打印一条消息，提示用户如何运行
+add_custom_command(TARGET ${EXECUTABLE_NAME} POST_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E echo "编译完成! 运行可执行文件: ./${EXECUTABLE_NAME}")
 
 # (可选) 添加安装指令
-# 将安装目录设置为项目根目录下的 bin 文件夹
-install(TARGETS ${EXECUTABLE_NAME} DESTINATION ${CMAKE_BINARY_DIR}/bin) 
+install(TARGETS ${EXECUTABLE_NAME} DESTINATION bin) 

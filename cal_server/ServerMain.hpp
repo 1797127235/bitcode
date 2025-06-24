@@ -41,7 +41,7 @@ public:
                 continue;
             }
 
-            std::thread t([this, sockfd, peer_addr]()
+            std::thread t([this,sockfd, peer_addr]()
             {
                 try {
                     _io_func(sockfd, peer_addr);
