@@ -2,6 +2,50 @@
 #include <iostream>
 #include <json/json.h>
 //"len"\r\n"{json}"\r\n ---完整报文  len表示有效载荷的长度
+static const std::string seq="\r\n";
+std::string Encode(std::string &jsonstr)
+{
+    std::string strlen=std::to_string(jsonstr.size());
+    return strlen+seq+jsonstr+seq;
+}
+
+std::string Decode(std::string &str)
+{
+    // 查找第一个分隔符
+    size_t pos = str.find(seq);
+    if (pos == std::string::npos) {
+        return std::string(); // 没有找到分隔符，返回空字符串
+    }
+    // 提取长度字符串
+    std::string strlen = str.substr(0, pos); 
+    // 验证长度字符串是否为有效数字
+    if (strlen.empty()) {
+        return std::string();
+    }
+    size_t payload_len;
+    try {
+        payload_len = std::stoul(strlen);
+    } catch (const std::exception&) {
+        return std::string(); // 长度转换失败
+    }
+    
+    // 计算完整报文的总长度：长度字符串 + 第一个分隔符 + 有效载荷 + 第二个分隔符
+    size_t total = strlen.size() + seq.size() + payload_len + seq.size();
+    
+    // 检查当前字符串长度是否足够
+    if (str.size() < total) {
+        return std::string(); // 数据不完整
+    }
+    
+    // 提取有效载荷
+    std::string decode_str = str.substr(pos + seq.size(), payload_len);
+    
+    // 从原字符串中移除已处理的数据
+    str.erase(0, total);
+    
+    return decode_str;
+}
+
 class Request
 {
 public:

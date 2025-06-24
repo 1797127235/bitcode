@@ -71,8 +71,8 @@ namespace socket_ns
         virtual SockPtr Accepter(InetAddr *clientaddr) = 0;
         virtual bool Connector(const std::string &ip, int16_t port) = 0;
         
-        virtual size_t Send(const std::string & in) = 0;
-        virtual size_t Recv(std::string * out) = 0;
+        virtual int Send(const std::string & in) = 0;
+        virtual int Recv(std::string * out) = 0;
 
         virtual void Close() = 0;
         virtual SOCKET GetSockfd() const = 0;
@@ -183,24 +183,24 @@ namespace socket_ns
         }
 
 
-        size_t Send(const std::string & in) override
+        int Send(const std::string & in) override
         {
             // 发送数据
-            size_t bytes_sent = send(_sockfd, in.c_str(), in.size(), 0);
+            int bytes_sent = send(_sockfd, in.c_str(), in.size(), 0);
             if (bytes_sent == SOCKET_ERROR)
             {
                 LOG(ERROR_, "Failed to send data on TCP socket");
                 throw std::runtime_error("Failed to send data on TCP socket");
             }
             //LOG(INFO, "Sent %zu bytes on TCP socket", bytes_sent);
-            return static_cast<size_t>(bytes_sent);
+            return bytes_sent;
         }
 
-        size_t Recv(std::string * out) override
+        int Recv(std::string * out) override
         {
             // 接收数据 
             char buffer[4096]; // 缓冲区大小可以根据需要调整
-            size_t bytes_received = recv(_sockfd, buffer, sizeof(buffer) - 1, 0);
+            int bytes_received = recv(_sockfd, buffer, sizeof(buffer) - 1, 0);
             if (bytes_received == SOCKET_ERROR)
             {
                 LOG(ERROR_, "Failed to receive data on TCP socket");
@@ -212,8 +212,8 @@ namespace socket_ns
                 return 0; // 连接已关闭
             }
             buffer[bytes_received] = '\0'; // 添加字符串结束符
-            *out = buffer;
-            return static_cast<size_t>(bytes_received);
+            *out += buffer; //todo 
+            return bytes_received;
         }
 
         void Close() override
