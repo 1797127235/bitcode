@@ -20,22 +20,22 @@ public:
         auto resp=Factory::CreateResponse();
         switch (op)
         {
-        case 43:  // '+' 的ASCII码
+        case '+':  // '+' 的ASCII码
             resp->_result = req->getx() + req->gety();
             resp->_code = 0;
             resp->_desc = "success";
             break;
-        case 45:  // '-' 的ASCII码
+        case '-':  // '-' 的ASCII码
             resp->_result = req->getx() - req->gety();
             resp->_code = 0;
             resp->_desc = "success";
             break;
-        case 42:  // '*' 的ASCII码
+        case '*':  // '*' 的ASCII码
             resp->_result = req->getx() * req->gety();
             resp->_code = 0;
             resp->_desc = "success";
             break;
-        case 47:  // '/' 的ASCII码
+        case '/':  // '/' 的ASCII码
         {
             if (req->gety() == 0)
             {
