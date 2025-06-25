@@ -1,0 +1,8 @@
+C:/Users/17971/Desktop/bitcode/cal_server/build/CMakeFiles/cal_server.dir
+C:/Users/17971/Desktop/bitcode/cal_server/build/CMakeFiles/cal_client.dir
+C:/Users/17971/Desktop/bitcode/cal_server/build/CMakeFiles/edit_cache.dir
+C:/Users/17971/Desktop/bitcode/cal_server/build/CMakeFiles/rebuild_cache.dir
+C:/Users/17971/Desktop/bitcode/cal_server/build/CMakeFiles/list_install_components.dir
+C:/Users/17971/Desktop/bitcode/cal_server/build/CMakeFiles/install.dir
+C:/Users/17971/Desktop/bitcode/cal_server/build/CMakeFiles/install/local.dir
+C:/Users/17971/Desktop/bitcode/cal_server/build/CMakeFiles/install/strip.dir

@@ -1,3 +1,4 @@
+#pragma once
 #include <string>
 #include<memory>
 #include<functional>
@@ -106,7 +107,12 @@ public:
 
         return true;
     }
-
+    void SetRequest(int x,char op,int y)
+    {
+        _x=x;
+        _op=op;
+        _y=y;
+    }
     int getx() const
     {
         return _x;
@@ -137,6 +143,7 @@ public:
         Json::Value root;
         root["result"] = _result;
         root["code"] = _code;
+        root["desc"] = _desc;
         Json::StreamWriterBuilder builder;
         builder["indentation"] = "";                // 不缩进
         builder["enableYAMLCompatibility"] = false; // 避免特殊格式
@@ -165,9 +172,12 @@ public:
             return false;
         if (!root.isMember("code") || !root["code"].isInt())
             return false;
+        if (!root.isMember("desc") || !root["desc"].isString())
+            return false;
 
         _result = root["result"].asInt();
         _code = root["code"].asInt();
+        _desc = root["desc"].asString();
         return true;
     }
 
@@ -188,4 +198,15 @@ private:
     int _code;
     std::string _desc;
 
+};
+
+
+class Factory{
+public:
+    static std::shared_ptr<Request> CreateRequest(){
+        return  std::make_shared<Request>();
+    }
+    static std::shared_ptr<Response> CreateResponse(){
+        return std::make_shared<Response>();
+    }
 };

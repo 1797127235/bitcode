@@ -70,7 +70,6 @@ namespace socket_ns
         virtual void CreateListenOrDie(int backlog = gbacklog) = 0;
         virtual SockPtr Accepter(InetAddr *clientaddr) = 0;
         virtual bool Connector(const std::string &ip, int16_t port) = 0;
-        
         virtual int Send(const std::string & in) = 0;
         virtual int Recv(std::string * out) = 0;
 
