@@ -161,7 +161,7 @@ namespace log_ns
         
         void FlushLogToScreen(const logmessage &lg)
         {
-            printf("[%s][%d][%s][%d][%s] %s",
+            printf("[%s][%d][%s][%d][%s] %s\n",
                    lg._level.c_str(),
                    lg._id,
                    lg._filename.c_str(),
@@ -176,7 +176,7 @@ namespace log_ns
             if (!out.is_open())
                 return;
             char logtxt[2048];
-            snprintf(logtxt, sizeof(logtxt), "[%s][%d][%s][%d][%s] %s",
+            snprintf(logtxt, sizeof(logtxt), "[%s][%d][%s][%d][%s] %s\n",
                      lg._level.c_str(),
                      lg._id,
                      lg._filename.c_str(),

@@ -31,16 +31,32 @@ public:
                     break;
                 }
                 std::string request=Decode(packagestreamqueue);
-                //LOG(INFO, "Request: %s", request.c_str());
+                LOG(INFO, "Received request: %s", request.c_str());
                 
-                Request req;
-                req.Deserialize(request);
-                std::shared_ptr<Response> resp = _process_func(std::make_shared<Request>(req));
+                if(request.empty()) {
+                    continue; // 数据不完整，继续接收
+                }
+                
+                auto req = Factory::CreateRequest();
+                if(!req->Deserialize(request)) {
+                    LOG(ERROR_, "Failed to deserialize request: %s", request.c_str());
+                    // 发送错误响应
+                    auto error_resp = std::make_shared<Response>(0, 4, "deserialization error");
+                    std::string error_response;
+                    error_resp->Serialize(&error_response);
+                    std::string error_send_str = Encode(error_response);
+                    sockfd->Send(error_send_str);
+                    continue;
+                }
+                
+                LOG(INFO, "Deserialized: x=%d, op='%c', y=%d", req->getx(), req->getop(), req->gety());
+                
+                std::shared_ptr<Response> resp = _process_func(req);
                 std::string response;
                 //序列化响应
                 resp->Serialize(&response);
+                LOG(INFO, "Response: %s", response.c_str());
 
-                Encode(response);
                 std::string send_str=Encode(response);
                 sockfd->Send(send_str);
            }

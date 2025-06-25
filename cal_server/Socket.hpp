@@ -84,13 +84,14 @@ namespace socket_ns
             CreateListenOrDie(backlog);
         }
 
-        void BuildClientSocket(const std::string &ip, int16_t port)
+        bool BuildClientSocket(const std::string &ip, int16_t port)
         {
             CreateSocketOrDie();
             if (!Connector(ip, port))
             {
-                throw std::runtime_error("Failed to connect to server");
+                return false;
             }
+            return true;
         }
     };
 

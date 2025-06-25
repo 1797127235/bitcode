@@ -54,6 +54,7 @@ std::string Decode(std::string &str)
 class Request
 {
 public:
+    Request() : _x(0), _y(0), _op('\0') {};
     // 序列化
     bool Serialize(std::string *out)
     {
@@ -65,45 +66,74 @@ public:
         // Json::FastWriter writer;
         // *out=writer.write(root);
 
-        Json::StreamWriterBuilder builder;
-        builder["indentation"] = "";                // 不缩进
-        builder["enableYAMLCompatibility"] = false; // 避免特殊格式
-        builder["dropNullPlaceholders"] = true;     // 可选：省略 null 值
-        builder["commentStyle"] = "None";           // 去除注释
-        *out = Json::writeString(builder, root);
+        // Json::StreamWriterBuilder builder;
+        // builder["indentation"] = "";                // 不缩进
+        // builder["enableYAMLCompatibility"] = false; // 避免特殊格式
+        // builder["dropNullPlaceholders"] = true;     // 可选：省略 null 值
+        // builder["commentStyle"] = "None";           // 去除注释
+        // *out = Json::writeString(builder, root);
+        // return true;
+
+        Json::FastWriter writer;
+        // Json::StyledWriter writer;
+        std::string s = writer.write(root);
+        *out = s;
         return true;
     }
     // 反序列化
     bool Deserialize(const std::string &in)
     {
-        Json::CharReaderBuilder builder;
-        builder["collectComments"] = false; // 不收集注释
+        // Json::CharReaderBuilder builder;
+        // builder["collectComments"] = false; // 不收集注释
+
+        // Json::Value root;
+        // std::string errs;
+
+        // std::istringstream s(in);
+        // std::string errs_out;
+        // bool ok = Json::parseFromStream(builder, s, &root, &errs_out);
+        // if (!ok)
+        // {
+        //     std::cerr << "Failed to parse JSON: " << errs_out << std::endl;
+        //     return false;
+        // }
+
+        // // 判断字段是否存在和类型是否正确
+        // if (!root.isMember("x") || !root["x"].isInt())
+        //     return false;
+        // if (!root.isMember("op") || !root["op"].isString())
+        //     return false;
+        // if (!root.isMember("y") || !root["y"].isInt())
+        //     return false;
+
+        // // 赋值
+        // _x = root["x"].asInt();
+        // std::string op_str = root["op"].asString();
+        // _op = op_str.empty() ? '\0' : op_str[0];  // 取字符串的第一个字符
+        // _y = root["y"].asInt();
+
+        // return true;
+
 
         Json::Value root;
-        std::string errs;
-
-        std::istringstream s(in);
-        std::string errs_out;
-        bool ok = Json::parseFromStream(builder, s, &root, &errs_out);
-        if (!ok)
-        {
-            std::cerr << "Failed to parse JSON: " << errs_out << std::endl;
+        Json::Reader reader;
+        bool res = reader.parse(in, root);
+        if (!res) {
+            std::cerr << "Failed to parse JSON" << std::endl;
             return false;
         }
 
-        // 判断字段是否存在和类型是否正确
-        if (!root.isMember("x") || !root["x"].isInt())
+        // 检查字段是否存在
+        if (!root.isMember("x") || !root.isMember("y") || !root.isMember("op")) {
+            std::cerr << "Missing required fields in JSON" << std::endl;
             return false;
-        if (!root.isMember("op") || !root["op"].isString())
-            return false;
-        if (!root.isMember("y") || !root["y"].isInt())
-            return false;
+        }
 
-        // 赋值
         _x = root["x"].asInt();
-        std::string op_str = root["op"].asString();
-        _op = op_str.empty() ? '\0' : op_str[0];  // 取字符串的第一个字符
         _y = root["y"].asInt();
+        _op = root["op"].asInt();
+
+        std::cerr << "[Protocol DEBUG] Parsed: x=" << _x << ", y=" << _y << ", op=" << (int)_op << " (char: '" << (char)_op << "')" << std::endl;
 
         return true;
     }
@@ -135,49 +165,68 @@ private:
 class Response
 {
 public:
-    Response(){};
+    Response() : _result(0), _code(0), _desc("") {};
     Response(int result,int code,std::string desc):_result(result),_code(code),_desc(desc){};
     // 序列化
     bool Serialize(std::string *out)
     {
+        // Json::Value root;
+        // root["result"] = _result;
+        // root["code"] = _code;
+        // root["desc"] = _desc;
+        // Json::StreamWriterBuilder builder;
+        // builder["indentation"] = "";                // 不缩进
+        // builder["enableYAMLCompatibility"] = false; // 避免特殊格式
+        // builder["dropNullPlaceholders"] = true;     // 可选：省略 null 值
+        // builder["commentStyle"] = "None";           // 去除注释
+        // *out=Json::writeString(builder,root);
+        // return true;
+
         Json::Value root;
         root["result"] = _result;
         root["code"] = _code;
         root["desc"] = _desc;
-        Json::StreamWriterBuilder builder;
-        builder["indentation"] = "";                // 不缩进
-        builder["enableYAMLCompatibility"] = false; // 避免特殊格式
-        builder["dropNullPlaceholders"] = true;     // 可选：省略 null 值
-        builder["commentStyle"] = "None";           // 去除注释
-        *out=Json::writeString(builder,root);
+        Json::FastWriter writer;
+        std::string s = writer.write(root);
+        *out = s;
         return true;
     }
     // 反序列化
     bool Deserialize(const std::string &in)
     {
-        Json::CharReaderBuilder builder;
-        builder["collectComments"] = false; // 不收集注释
-        Json::Value root;
-        std::string errs;
-        std::istringstream s(in);
-        std::string errs_out;
-        bool ok = Json::parseFromStream(builder, s, &root, &errs_out);
-        if (!ok)
-        {
-            std::cerr << "Failed to parse JSON: " << errs_out << std::endl;
-            return false;
-        }
-        // 判断字段是否存在和类型是否正确
-        if (!root.isMember("result") || !root["result"].isInt())
-            return false;
-        if (!root.isMember("code") || !root["code"].isInt())
-            return false;
-        if (!root.isMember("desc") || !root["desc"].isString())
-            return false;
+        // Json::CharReaderBuilder builder;
+        // builder["collectComments"] = false; // 不收集注释
+        // Json::Value root;
+        // std::string errs;
+        // std::istringstream s(in);
+        // std::string errs_out;
+        // bool ok = Json::parseFromStream(builder, s, &root, &errs_out);
+        // if (!ok)
+        // {
+        //     std::cerr << "Failed to parse JSON: " << errs_out << std::endl;
+        //     return false;
+        // }
+        // // 判断字段是否存在和类型是否正确
+        // if (!root.isMember("result") || !root["result"].isInt())
+        //     return false;
+        // if (!root.isMember("code") || !root["code"].isInt())
+        //     return false;
+        // if (!root.isMember("desc") || !root["desc"].isString())
+        //     return false;
 
+        // _result = root["result"].asInt();
+        // _code = root["code"].asInt();
+        // _desc = root["desc"].asString();
+        // return true;
+        Json::Value root;
+        Json::Reader reader;
+        bool res = reader.parse(in, root);
+        if (!res)
+            return false;
         _result = root["result"].asInt();
         _code = root["code"].asInt();
         _desc = root["desc"].asString();
+
         return true;
     }
 
@@ -193,7 +242,7 @@ public:
     {
         return _desc;
     }
-private:
+public:
     int _result;
     int _code;
     std::string _desc;
