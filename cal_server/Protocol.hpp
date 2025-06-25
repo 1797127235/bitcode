@@ -1,6 +1,10 @@
 #include <string>
+#include<memory>
+#include<functional>
 #include <iostream>
 #include <json/json.h>
+
+
 //"len"\r\n"{json}"\r\n ---完整报文  len表示有效载荷的长度
 static const std::string seq="\r\n";
 std::string Encode(std::string &jsonstr)
@@ -103,6 +107,19 @@ public:
         return true;
     }
 
+    int getx() const
+    {
+        return _x;
+    }
+    int gety() const
+    {
+        return _y;
+    }
+    char getop() const
+    {
+        return _op;
+    }
+
 private:
     int _x;
     int _y;
@@ -112,6 +129,8 @@ private:
 class Response
 {
 public:
+    Response(){};
+    Response(int result,int code,std::string desc):_result(result),_code(code),_desc(desc){};
     // 序列化
     bool Serialize(std::string *out)
     {
@@ -152,9 +171,21 @@ public:
         return true;
     }
 
+    int getresult() const
+    {
+        return _result;
+    }
+    int getcode() const
+    {
+        return _code;
+    }
+    std::string getdesc() const
+    {
+        return _desc;
+    }
 private:
     int _result;
     int _code;
-    std::string desc;
+    std::string _desc;
 
 };
